@@ -1,0 +1,84 @@
+# Prithvi-EO-2.0 + LoRA — AerialWaste Binary Classification
+# IBM peft-geofm paper defaults: r=16, alpha=16, targets: qkv + mlp
+
+# ── Model ──────────────────────────────────────────────────────────────────
+model:
+  model_factory: EncoderDecoderFactory
+  model_args:
+    backbone: prithvi_eo_v2_300          # 300M param variant
+    backbone_pretrained: true
+    backbone_bands:                       # AerialWaste is RGB
+      - RED
+      - GREEN
+      - BLUE
+    backbone_num_frames: 1               # Single timestamp (no multitemporal)
+    decoder: IdentityDecoder             # For classification, just pool + head
+    num_classes: 2                       # Binary: waste vs. no-waste
+
+    # LoRA configuration — injected into ViT attention + MLP
+    peft_config:
+      method: LORA
+      replace_qkv: qkv
+      peft_config_kwargs:
+        target_modules:
+          - qkv.q_linear
+          - qkv.v_linear
+          - mlp.fc1
+          - mlp.fc2
+        lora_alpha: 16
+        r: 16
+        lora_dropout: 0.1
+        bias: none
+
+# ── Task ───────────────────────────────────────────────────────────────────
+task:
+  loss: focal                            # Focal loss for 2:1 class imbalance
+  lr: 6.0e-5
+  optimizer: AdamW
+  optimizer_hparams:
+    weight_decay: 0.01
+  scheduler: OneCycleLR
+  scheduler_hparams:
+    pct_start: 0.1                       # 10% warmup
+
+# ── Data ───────────────────────────────────────────────────────────────────
+data:
+  train_data_root: data/processed/train
+  val_data_root:   data/processed/val
+  test_data_root:  data/processed/test
+  img_grep: "*.jpg"
+  batch_size: 16
+  num_workers: 4
+  image_size: 224
+  # Normalization stats computed from AerialWaste training set
+  # (update after running prepare_dataset.py)
+  means: [0.485, 0.456, 0.406]          # ImageNet defaults as fallback
+  stds:  [0.229, 0.224, 0.225]
+
+# ── Training ────────────────────────────────────────────────────────────────
+trainer:
+  max_epochs: 20
+  accelerator: gpu
+  devices: 1
+  precision: 16-mixed                    # AMP for speed
+  log_every_n_steps: 10
+  val_check_interval: 1.0
+  callbacks:
+    - class_path: lightning.pytorch.callbacks.ModelCheckpoint
+      init_args:
+        monitor: val/AP
+        mode: max
+        save_top_k: 1
+        filename: prithvi_lora_best_{epoch:02d}_{val_AP:.4f}
+    - class_path: lightning.pytorch.callbacks.EarlyStopping
+      init_args:
+        monitor: val/AP
+        patience: 10
+        mode: max
+
+# ── Logging ─────────────────────────────────────────────────────────────────
+logger:
+  class_path: lightning.pytorch.loggers.CSVLogger
+  init_args:
+    save_dir: results/metrics
+    name: prithvi_lora_classification

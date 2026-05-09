@@ -1,0 +1,37 @@
+# Prithvi-EO-2.0-600M + LoRA — AerialWaste Binary Classification
+
+model:
+  model_args:
+    backbone: prithvi_eo_v2_600
+    backbone_pretrained: true
+    backbone_bands: [RED, GREEN, BLUE]
+    backbone_num_frames: 1
+    num_classes: 2
+    peft_config:
+      method: LORA
+      peft_config_kwargs:
+        target_modules: [qkv.q_linear, qkv.v_linear, mlp.fc1, mlp.fc2]
+        lora_alpha: 16
+        r: 16
+        lora_dropout: 0.1
+        bias: none
+
+task:
+  loss: focal
+  lr: 4.0e-5
+  optimizer: AdamW
+  optimizer_hparams:
+    weight_decay: 0.01
+  scheduler: OneCycleLR
+  scheduler_hparams:
+    pct_start: 0.1
+
+data:
+  batch_size: 8
+  num_workers: 4
+  image_size: 224
+  means: [0.485, 0.456, 0.406]
+  stds:  [0.229, 0.224, 0.225]
+
+trainer:
+  max_epochs: 20
