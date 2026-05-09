@@ -50,17 +50,21 @@ python scripts/download_dataset.py --output data/raw --annotations-only
 
 ## Results
 
-| Model | AP (all) | F1 | Params trained |
-|---|---|---|---|
-| ResNet50+FPN (paper checkpoint)¹ | — | — | 100% |
-| Prithvi-300M linear probe | — | — | ~0% (head only) |
-| Prithvi-600M linear probe | — | — | ~0% (head only) |
-| Prithvi-300M + LoRA | 89.7% | 85.1% | ~1.3% |
-| Prithvi-600M + LoRA | — | — | ~1.3% |
+All models evaluated on the same 70/15/15 stratified split. AP = Average Precision (area under PR curve).
 
-¹ Paper reports AP=87.99%, F1=80.70%, precision=81.89%, recall=79.54% on a 75/25 train/test split. We use a 70/15/15 split so results are not directly comparable. Per-source breakdown (AP AGEA=94.5%) cannot be reproduced — image filenames carry no source encoding.
+| Model | AP | F1 | Precision | Recall | Params trained |
+|---|---|---|---|---|---|
+| ResNet50+FPN (Torres & Fraternali 2023)¹ | 87.99% | 80.70% | 81.89% | 79.54% | 100% |
+| ResNet50+FPN (paper checkpoint, our split)² | 89.45% | 89.87% | 86.17% | 93.90% | 100% |
+| Prithvi-300M linear probe | 83.90% | 75.84% | 63.03% | 95.17% | ~0% (head only) |
+| Prithvi-600M linear probe | 84.62% | 76.31% | 64.16% | 94.13% | ~0% (head only) |
+| Prithvi-300M + LoRA | 89.74% | 85.10% | 79.38% | 91.71% | 1.28% |
+| **Prithvi-600M + LoRA** | **93.06%** | **86.39%** | **79.25%** | **94.94%** | **1.03%** |
 
-*Results filled after evaluation. See `results/` for full metrics.*
+¹ Reported by Torres & Fraternali on a 75/25 split — not directly comparable to our split.  
+² Authors' checkpoint evaluated on our 70/15/15 split. Training data may overlap our test set, so this row is an upper bound for the baseline.
+
+See `results/figures/` for PR curves, ROC curves, confusion matrices, and parameter-efficiency plots.
 
 ---
 
