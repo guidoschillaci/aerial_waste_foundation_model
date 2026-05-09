@@ -64,14 +64,6 @@ All models evaluated on the same 70/15/15 stratified split. AP = Average Precisi
 ¹ Reported by Torres & Fraternali on a 75/25 split — not directly comparable to our split.  
 ² Authors' checkpoint evaluated on our 70/15/15 split. Training data may overlap our test set, so this row is an upper bound for the baseline.
 
-**Metrics**
-
-- **AP (Average Precision)** — area under the Precision-Recall curve across all thresholds. This is the primary metric: it captures the full precision/recall trade-off in one number and handles class imbalance well.
-- **F1** — harmonic mean of precision and recall at a fixed 0.5 decision threshold. Useful for a quick read, but the threshold is arbitrary.
-- **Precision** — out of every image flagged as a waste site, how many actually are. Low precision means many false alarms.
-- **Recall** — out of every true waste site in the test set, how many were caught. Low recall means missed landfills. The linear probes push recall very high (>94%) but precision drops sharply, because the frozen backbone leans towards predicting positive.
-- **Params trained** — fraction of weights updated during training. LoRA reaches ~1% by injecting small adapter matrices into the attention layers and freezing everything else.
-
 See `results/figures/` for PR curves, ROC curves, confusion matrices, and parameter-efficiency plots.
 
 ---
