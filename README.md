@@ -162,6 +162,8 @@ The suite covers the dataset pipeline, model architecture, evaluate utilities, a
 
 ## Citation
 
+A paper describing this work is available here:
+
 If you use this code, please cite the original AerialWaste paper:
 
 ```bibtex
