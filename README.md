@@ -206,3 +206,9 @@ And the foundation model:
 | Prithvi-EO-2.0 weights | [Apache 2.0](https://www.apache.org/licenses/LICENSE-2.0) | [ibm-nasa-geospatial/Prithvi-EO-2.0-300M](https://huggingface.co/ibm-nasa-geospatial/Prithvi-EO-2.0-300M) |
 | Trained weights (fine-tuned on AerialWaste) | CC BY-NC-ND 4.0 (derived from dataset) — non-commercial only | this repo |
 | Google Earth imagery (subset of AerialWaste) | [Google Earth ToS](https://about.google/brand-resource-center/products-and-services/geo-guidelines/) — **do not store or redistribute** | via AerialWaste |
+
+
+---
+## Disclaimer
+
+This work was carried out by the author independently, outside of and unrelated to the author's employment. The work and the views expressed herein are solely the author's own and do not reflect those of any affiliated institution. This research was conducted in the author's personal time using exclusively personal resources.}
